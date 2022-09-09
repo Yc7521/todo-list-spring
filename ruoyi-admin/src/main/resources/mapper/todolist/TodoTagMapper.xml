@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.todolist.mapper.TodoTagMapper">
+
+    <resultMap type="TodoTag" id="TodoTagResult">
+        <result property="id" column="id"/>
+        <result property="todoId" column="todo_id"/>
+        <result property="tagId" column="tag_id"/>
+    </resultMap>
+
+    <sql id="selectTodoTagVo">
+        select id, todo_id, tag_id
+        from sys_todo_tag
+    </sql>
+
+    <select id="selectTodoTagList" parameterType="TodoTag" resultMap="TodoTagResult">
+        <include refid="selectTodoTagVo"/>
+        <where>
+            <if test="todoId != null ">and todo_id = #{todoId}</if>
+            <if test="tagId != null ">and tag_id = #{tagId}</if>
+        </where>
+    </select>
+
+    <select id="selectTodoTagById" parameterType="Long" resultMap="TodoTagResult">
+        <include refid="selectTodoTagVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTodoTag" parameterType="TodoTag" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_todo_tag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="todoId != null">todo_id,</if>
+            <if test="tagId != null">tag_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="todoId != null">#{todoId},</if>
+            <if test="tagId != null">#{tagId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTodoTag" parameterType="TodoTag">
+        update sys_todo_tag
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="todoId != null">todo_id = #{todoId},</if>
+            <if test="tagId != null">tag_id = #{tagId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTodoTagById" parameterType="Long">
+        delete
+        from sys_todo_tag
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteTodoTagByIds" parameterType="String">
+        delete from sys_todo_tag where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

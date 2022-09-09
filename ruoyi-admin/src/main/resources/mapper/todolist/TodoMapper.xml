@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.todolist.mapper.TodoMapper">
+
+    <resultMap type="Todo" id="TodoResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="expiredTime" column="expired_time"/>
+        <result property="priority" column="priority"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <sql id="selectTodoVo">
+        select id,
+               title,
+               description,
+               created_time,
+               expired_time,
+               priority,
+               parent_id,
+               user_id
+        from sys_todo
+    </sql>
+
+    <select id="selectTodoList" parameterType="Todo" resultMap="TodoResult">
+        <include refid="selectTodoVo"/>
+        <where>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="description != null  and description != ''">and description =
+                #{description}
+            </if>
+            <if test="createdTime != null ">and created_time = #{createdTime}</if>
+            <if test="expiredTime != null ">and expired_time = #{expiredTime}</if>
+            <if test="priority != null ">and priority = #{priority}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+        </where>
+    </select>
+
+    <select id="selectTodoById" parameterType="Long" resultMap="TodoResult">
+        <include refid="selectTodoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTodo" parameterType="Todo" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_todo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="description != null">description,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="expiredTime != null">expired_time,</if>
+            <if test="priority != null">priority,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="userId != null">user_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="description != null">#{description},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="expiredTime != null">#{expiredTime},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="userId != null">#{userId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTodo" parameterType="Todo">
+        update sys_todo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="expiredTime != null">expired_time = #{expiredTime},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTodoById" parameterType="Long">
+        delete
+        from sys_todo
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteTodoByIds" parameterType="String">
+        delete from sys_todo where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
